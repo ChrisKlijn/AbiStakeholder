@@ -6,12 +6,11 @@
 # -------------------------------------------------------------------
 
 # Medoid settings
-dataDir <- '~/data/smallproj/AbiAnalysis'
-codeDit <- '~/gitCodeChris/AbiStakeholder'
+dataDir <- '~/data/smallproj/AbiAnalysis/'
+codeDir <- '~/gitCodeChris/AbiStakeholder/'
 
 # Libraries and code
 library(foreign) # For read.spss
-library(gplots) # for heatmap.2
 
 # WD
 setwd(dataDir)
@@ -21,14 +20,20 @@ setwd(dataDir)
 
 # Read data as a list
 dataTable <- read.spss('SPSS Results 17 Oct 2011_original version.sav')
-# Remove all explanation columns and convert to data.frame
+# Remove all explanation columns and the filter column 
+# and convert to data.frame
 dataTable <- as.data.frame(
-  dataTable[!grepl('EXPL|Expl', names(dataTable))], stringsAsFactors=F)
+  dataTable[!grepl('EXPL|Expl|filter', names(dataTable))],
+  stringsAsFactors=F)
 row.names(dataTable) <- paste('R', dataTable$Respondent_ID)
 
+# Split respondant info and survey data
 respondentColumns <- grepl(
-  'Respondent_ID|Type_of_organisation|Affiliation', colnames(dataTable))
+  'Respondent_ID|Type_of_organisation|Affiliation|Stakeholder', 
+  colnames(dataTable))
 respondentData <- dataTable[,respondentColumns]
 dataTable <- dataTable[,!respondentColumns]
 
+# Save the data and the respondent info
 
+save(file='abi_Stake_data.Rda', list=c('dataTable', 'respondentData'))
